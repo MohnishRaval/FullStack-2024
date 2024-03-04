@@ -9,8 +9,6 @@ const app = express();
 // Use your environment variables
 const port = process.env.PORT || 4000;
 
-// ... rest of your Express app configuration
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
