@@ -11,3 +11,5 @@ B. #Running the project-For Backend
 C. #Running For Frontend
 
 1.  npm run dev
+
+D. Add .env file in your backend folder
