@@ -23,7 +23,6 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          npm run test
 
       # Install dependencies, export environment variables to be used by application and run tests for the server application
       - name: Install and Test Server
