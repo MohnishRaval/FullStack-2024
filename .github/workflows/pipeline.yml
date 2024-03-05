@@ -1,0 +1,70 @@
+# The name of the workflow.
+name: Build and Deploy
+
+# Run the workflow when code is pushed to the main branch
+on:
+  push:
+    branches:
+      - main
+
+
+# This is the workflow that is being run.
+jobs:
+  build-and-deploy:
+    # This is telling GitHub to run the workflow on the latest version of Ubuntu.
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code from the GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Install dependencies and run tests for the client application
+      - name: Install and Test Client
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm run test
+
+      # Install dependencies, export environment variables to be used by application and run tests for the server application
+      - name: Install and Test Server
+        working-directory: ./backend
+        run: |
+          npm install
+
+      # Build a Docker image for the client application
+      - name: Build Client Docker Image
+        working-directory: ./frontend
+        # Build image with tag using Git commit SHA
+        run: |
+          docker build -t 19982707/fullstack-2024:frontend-${{ github.sha }} .
+      
+      # Build a Docker image for the server application
+      - name: Build Server Docker Image
+        working-directory: ./backend
+        # Build image with tag using Git commit SHA
+        run: |
+          docker build -t 19982707/fullstack-2024:backend-${{ github.sha }} .
+
+      # Login to Docker Hub using credentials from repository secrets
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Push the Docker images to Docker Hub
+      - name: Push Docker Images to Docker Hub
+        run: |
+          docker push 19982707/fullstack-2024:frontend-${{ github.sha }}
+          docker push 19982707/fullstack-2024:backend-${{ github.sha }}
+
+      # Pull the latest Docker images from Docker Hub (optional)
+      - name: Pull Latest Docker Images
+        run: |
+          docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
+          docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
+
+      # Restart or redeploy the application (replace with your deployment process)
+      - name: Redeploy Application
+        run: |
+          docker-compose -f docker-compose.yml up -d
