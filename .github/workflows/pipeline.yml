@@ -64,10 +64,20 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Stop and remove existing containers
+            docker stop frontend-container || true
+            docker rm frontend-container || true
+
+            docker stop backend-container || true
+            docker rm backend-container || true
+
+            # Pull the latest Docker images
             docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
             docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
-            docker-compose -f /home/ec2-user/docker-compose.yml up -d
 
+            # Run the new containers
+            docker run -d --name frontend-container 19982707/fullstack-2024:frontend-${{ github.sha }}
+            docker run -d --name backend-container -p 3000:3000 19982707/fullstack-2024:backend-${{ github.sha }}
       # # Pull the latest Docker images from Docker Hub (optional)
       # - name: Pull Latest Docker Images
       #   run: |
