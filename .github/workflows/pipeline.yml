@@ -66,7 +66,7 @@ jobs:
           script: |
             docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
             docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
-            docker-compose -f /path/to/docker-compose.yml up -d
+            docker-compose -f :/home/ec2-user/docker-compose.yml up -d
 
       # # Pull the latest Docker images from Docker Hub (optional)
       # - name: Pull Latest Docker Images
