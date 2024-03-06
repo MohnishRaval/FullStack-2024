@@ -56,14 +56,25 @@ jobs:
         run: |
           docker push 19982707/fullstack-2024:frontend-${{ github.sha }}
           docker push 19982707/fullstack-2024:backend-${{ github.sha }}
+      
+      - name: SSH into EC2 and pull latest Docker images
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
+            docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
+            docker-compose -f /path/to/docker-compose.yml up -d
 
-      # Pull the latest Docker images from Docker Hub (optional)
-      - name: Pull Latest Docker Images
-        run: |
-          docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
-          docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
+      # # Pull the latest Docker images from Docker Hub (optional)
+      # - name: Pull Latest Docker Images
+      #   run: |
+      #     docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
+      #     docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
 
-      # Restart or redeploy the application (replace with your deployment process)
-      - name: Redeploy Application
-        run: |
-          docker-compose -f docker-compose.yml up -d
+      # # Restart or redeploy the application (replace with your deployment process)
+      # - name: Redeploy Application
+      #   run: |
+      #     docker-compose -f docker-compose.yml up -d
