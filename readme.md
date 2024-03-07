@@ -1,44 +1,52 @@
-#Project requirements
-SETUP:
-a. install lerna-npm install -g lerna
-b. in root: npm install
-c. npm start in devlopment stage
+# Project Requirements
 
-A. Extensions:
+## Setup
 
-1. eslint by microsoft
-2. node version 20.12
+a. Install lerna: `npm install -g lerna`
 
-B. #Running the project-For Backend
-1.npm run dev
-2.npm run start
+b. In the root: `npm install`
 
-C. #Running For Frontend
+c. Run in development stage: `npm start`
 
-1.  npm run dev
+## Extensions
 
-D. Add .env file in your backend folder
+1. Eslint by Microsoft
+2. Node version 20.12
 
-#DOCKER-COMPOSE
+## Running the Project - Backend
 
-1. docker-compose build
-2. docker-compose up=>for running docker compose
-3. docker-compose down=>for stopping docker compose
-4. docker rmi fullstack-2024_backend:latest fullstack-2024_frontend:latest (delete created imaages if you want)
-5. for running frontend along on docker:
-   a. docker build -t reactfrontend:latest .
-   b. docker run -p 3000:3000 reactfrontend:latest
+1. Run development server: `npm run dev`
+2. Run production server: `npm run start`
 
-6. Lernajs
-   a. npx lerna clean
-   b.npx lerna list
-   c.npx lerna repair
-   d.npx lerna start
-   e.npx lerna build
+## Running the Project - Frontend
+
+1. Run the development server: `npm run dev`
+
+## Add .env File
+
+1. Add a `.env` file in your backend folder.
+
+## Docker Compose
+
+1. Build Docker Compose images: `docker-compose build`
+2. Run Docker Compose: `docker-compose up` (for running Docker Compose)
+3. Stop Docker Compose: `docker-compose down` (for stopping Docker Compose)
+4. Delete created images (if needed): `docker rmi fullstack-2024_backend:latest fullstack-2024_frontend:latest`
+5. For running frontend along on Docker:
+   a. Build the Docker image: `docker build -t reactfrontend:latest .`
+   b. Run the Docker container: `docker run -p 3000:3000 reactfrontend:latest`
+
+## Lerna.js
+
+1. Clean Lerna project: `npx lerna clean`
+2. List Lerna packages: `npx lerna list`
+3. Repair Lerna setup: `npx lerna repair`
+4. Start Lerna project: `npx lerna start`
+5. Build Lerna project: `npx lerna build`
 
 ---
 
-testing for dev in docker:
+Testing for development in Docker:
 
-1. run ./dev-start.sh to start
-2. run ./dev-stop.sh to stop
+1. Run `./dev-start.sh` to start.
+2. Run `./dev-stop.sh` to stop.
