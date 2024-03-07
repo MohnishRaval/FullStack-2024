@@ -7,7 +7,6 @@ on:
     branches:
       - main
 
-
 # This is the workflow that is being run.
 jobs:
   build-and-deploy:
@@ -20,26 +19,26 @@ jobs:
 
       # Install dependencies and run tests for the client application
       - name: Install and Test Client
-        working-directory: ./frontend
+        working-directory: ./packages/frontend
         run: |
           npm install
 
       # Install dependencies, export environment variables to be used by application and run tests for the server application
       - name: Install and Test Server
-        working-directory: ./backend
+        working-directory: ./packages/backend
         run: |
           npm install
 
       # Build a Docker image for the client application
       - name: Build Client Docker Image
-        working-directory: ./frontend
+        working-directory: ./packages/frontend
         # Build image with tag using Git commit SHA
         run: |
           docker build -t 19982707/fullstack-2024:frontend-${{ github.sha }} .
-      
+
       # Build a Docker image for the server application
       - name: Build Server Docker Image
-        working-directory: ./backend
+        working-directory: ./packages/backend
         # Build image with tag using Git commit SHA
         run: |
           docker build -t 19982707/fullstack-2024:backend-${{ github.sha }} .
@@ -56,7 +55,7 @@ jobs:
         run: |
           docker push 19982707/fullstack-2024:frontend-${{ github.sha }}
           docker push 19982707/fullstack-2024:backend-${{ github.sha }}
-      
+
       - name: SSH into EC2 and pull latest Docker images
         uses: appleboy/ssh-action@master
         with:
