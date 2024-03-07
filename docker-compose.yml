@@ -2,14 +2,14 @@ version: '3'
 services:
   frontend:
     build:
-      context: ./frontend
+      context: ./packages/frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
 
   backend:
     build:
-      context: ./backend
+      context: ./packages/backend
       dockerfile: Dockerfile
     ports:
-      - "5000:4000"
+      - '4000:4000'

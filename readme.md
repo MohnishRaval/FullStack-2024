@@ -1,4 +1,9 @@
 #Project requirements
+SETUP:
+a. install lerna-npm install -g lerna
+b. in root: npm install
+c. npm start in devlopment stage
+
 A. Extensions:
 
 1. eslint by microsoft
@@ -23,3 +28,17 @@ D. Add .env file in your backend folder
 5. for running frontend along on docker:
    a. docker build -t reactfrontend:latest .
    b. docker run -p 3000:3000 reactfrontend:latest
+
+6. Lernajs
+   a. npx lerna clean
+   b.npx lerna list
+   c.npx lerna repair
+   d.npx lerna start
+   e.npx lerna build
+
+---
+
+testing for dev in docker:
+
+1. run ./dev-start.sh to start
+2. run ./dev-stop.sh to stop

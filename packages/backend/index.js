@@ -15,5 +15,5 @@ app.listen(port, () => {
 
 // Define a route for the root URL
 app.get('/', (req, res) => {
-  res.send('Hello');
+  res.send('Check');
 });
