@@ -43,6 +43,7 @@ c. Run in development stage: `npm start`
 3. Repair Lerna setup: `npx lerna repair`
 4. Start Lerna project: `npx lerna start`
 5. Build Lerna project: `npx lerna build`
+6. Install a dependency for a particular package: `npm i dependency-name -w packagename`
 
 ---
 

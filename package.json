@@ -9,8 +9,8 @@
     "build": "lerna run build",
     "dev": "lerna run dev"
   },
-  "dependencies": {},
   "devDependencies": {
-    "lerna": "^8.1.2"
+    "lerna": "^8.1.2",
+    "postcss-nesting": "^12.1.0"
   }
 }
