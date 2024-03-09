@@ -63,6 +63,12 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Force remove all containers
+            docker rm -f $(docker ps -a -q)
+
+            # Force remove all images
+            docker rmi -f $(docker images -q)
+
             # Stop and remove existing containers
             docker stop frontend-container || true
             docker rm frontend-container || true
