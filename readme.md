@@ -50,3 +50,7 @@ Testing for development in Docker:
 
 1. Run `./dev-start.sh` to start.
 2. Run `./dev-stop.sh` to stop.
+
+## Hosting Address
+
+1. 18.235.217.2
