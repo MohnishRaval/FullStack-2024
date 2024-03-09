@@ -1,5 +1,5 @@
 # The name of the workflow.
-name: Build and Deploy
+name: CI/CD Pipeline
 
 # Run the workflow when code is pushed to the main branch
 on:
