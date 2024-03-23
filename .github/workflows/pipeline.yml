@@ -63,18 +63,13 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Force remove all containers
-            docker rm -f $(docker ps -a -q)
+            # Force remove specific containers
+            docker rm -f frontend-container || true
+            docker rm -f backend-container || true
 
-            # Force remove all images
-            docker rmi -f $(docker images -q)
-
-            # Stop and remove existing containers
-            docker stop frontend-container || true
-            docker rm frontend-container || true
-
-            docker stop backend-container || true
-            docker rm backend-container || true
+            # Force remove specific images related to the project
+            docker rmi -f 19982707/fullstack-2024:frontend-${{ github.sha }} || true
+            docker rmi -f 19982707/fullstack-2024:backend-${{ github.sha }} || true
 
             # Pull the latest Docker images
             docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
@@ -83,13 +78,3 @@ jobs:
             # Run the new containers
             docker run -d --name frontend-container -p 3000:3000 19982707/fullstack-2024:frontend-${{ github.sha }}
             docker run -d --name backend-container -p 4000:4000 19982707/fullstack-2024:backend-${{ github.sha }}
-      # # Pull the latest Docker images from Docker Hub (optional)
-      # - name: Pull Latest Docker Images
-      #   run: |
-      #     docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
-      #     docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
-
-      # # Restart or redeploy the application (replace with your deployment process)
-      # - name: Redeploy Application
-      #   run: |
-      #     docker-compose -f docker-compose.yml up -d
