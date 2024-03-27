@@ -55,3 +55,7 @@ Testing for development in Docker:
 ## Hosting Address
 
 1. 18.235.217.2
+
+## Run Command
+
+1. npx lerna run dev
