@@ -1,10 +1,10 @@
 import { constants } from '../constants/constants';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Pokemon from './pokemon';
+import { Pokemon } from './pokemon';
 import ReactPaginate from 'react-paginate';
 
-const Displaypokemons = () => {
+export const Displaypokemons = () => {
   const [pokemonDetails, setPokemonDetails] = useState([]);
   const [totalPages, setTotalPages] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,11 +66,13 @@ const Displaypokemons = () => {
   };
 
   return (
-    <div className="parent-displaypokemons container p-4">
-      <div className="pokemon-details flex flex-wrap p-2">{details}</div>
-      <div className="pagination fixed bottom-0 left-0 right-0 border bg-gray-600">
+    <div className="parent-displaypokemons container flex flex-col p-4 pt-0">
+      <div className="pokemon-details flex flex-grow flex-wrap p-2">
+        {details}
+      </div>
+      <div className="pagination bottom-0 left-0 right-0 mx-auto h-auto w-2/3 rounded-xl border bg-gray-600">
         <ReactPaginate
-          className="pagination m-auto flex justify-center space-x-16 p-3 font-bold"
+          className="pagination m-auto flex justify-center space-x-16 py-4 font-bold"
           pageCount={totalPages}
           onPageChange={handlePageChange}
           previousLabel={'Previous'}
@@ -99,5 +101,3 @@ const Displaypokemons = () => {
     </div>
   );
 };
-
-export default Displaypokemons;
