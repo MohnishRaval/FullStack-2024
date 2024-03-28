@@ -1,10 +1,10 @@
 import Displaypokemons from './components/displaypokemons.jsx';
-import { Navbar } from './components/navbar.jsx';
+// import { Navbar } from './components/navbar.jsx';
 
 const App = () => {
   return (
     <div className="App h-full">
-      <Navbar></Navbar>
+      {/* <Navbar></Navbar> */}
       <Displaypokemons></Displaypokemons>
     </div>
   );

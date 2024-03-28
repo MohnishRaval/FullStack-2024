@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 
-const Pokemon = ({ name, pokemonDetail }) => {
+const Pokemon = ({ name, index, image }) => {
   return (
     <div className="border p-1">
-      {name}
-      {pokemonDetail && pokemonDetail.order}
+      {index}. {name}
+      {image ? (
+        <img src={image} alt={name} className="h-20 w-20" />
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 };
@@ -12,5 +16,7 @@ const Pokemon = ({ name, pokemonDetail }) => {
 Pokemon.propTypes = {
   name: PropTypes.string,
   pokemonDetail: PropTypes.object,
+  index: PropTypes.number,
+  image: PropTypes.string,
 };
 export default Pokemon;
