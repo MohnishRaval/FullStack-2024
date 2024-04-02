@@ -5,6 +5,7 @@ import { Pokemon } from './pokemon';
 import ReactPaginate from 'react-paginate';
 import { Searchpokemon } from './searchpokemon';
 import { throttle } from 'lodash';
+import { Oval } from 'react-loader-spinner';
 
 const cache = {};
 
@@ -14,6 +15,7 @@ export const Displaypokemons = () => {
   const [totalPages, setTotalPages] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchPokemon, setSearchPokemon] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log('cache=', cache);
@@ -38,8 +40,10 @@ export const Displaypokemons = () => {
 
     // Function: Fetch Pokemons in range of 20
     const fetchPokemons = async (url) => {
+      setLoading(true);
       try {
         if (cache[url]) {
+          setLoading(false);
           setPokemonDetails(cache[url]);
           return;
         }
@@ -64,6 +68,7 @@ export const Displaypokemons = () => {
         const pokemonResponse = await Promise.all(pokemonPromises);
         setPokemonDetails(pokemonResponse);
         cache[url] = pokemonResponse;
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching Pokemon details:', error);
       }
@@ -71,6 +76,7 @@ export const Displaypokemons = () => {
 
     // Function: Fetch Pokemon by Name
     const fetchPokemonByName = throttle(async (filteredPokemonNames) => {
+      setLoading(true);
       try {
         const promises = filteredPokemonNames.map(async (pokemon) => {
           try {
@@ -98,6 +104,7 @@ export const Displaypokemons = () => {
 
         const filteredPokemonDetails = await Promise.all(promises);
         setPokemonDetails(filteredPokemonDetails);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching filtered Pokemon data:', error);
       }
@@ -141,7 +148,19 @@ export const Displaypokemons = () => {
     <div className="parent-displaypokemons container flex flex-col p-4 pt-0">
       <Searchpokemon onSearch={handleSearch} />
       <div className="pokemon-details flex flex-grow flex-wrap p-2">
-        {details}
+        {loading ? (
+          <Oval
+            visible={true}
+            height="80"
+            width="80"
+            color="#4fa94d"
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        ) : (
+          details
+        )}
       </div>
       <div className="pagination bottom-0 left-0 right-0 mx-auto flex h-auto w-full rounded-xl border bg-gray-600">
         <ReactPaginate
