@@ -1,51 +1,98 @@
 import { constants } from '../constants/constants';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Pokemon from './pokemon';
+import { Pokemon } from './pokemon';
 import ReactPaginate from 'react-paginate';
+import { Searchpokemon } from './searchpokemon';
 
-const Displaypokemons = () => {
+export const Displaypokemons = () => {
+  const [allPokemonNames, setAllPokemonNames] = useState([]);
   const [pokemonDetails, setPokemonDetails] = useState([]);
   const [totalPages, setTotalPages] = useState();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchPokemon, setSearchPokemon] = useState('');
+
   useEffect(() => {
-    fetchPokemons(
-      constants.URLS.BASE_URL +
-        `pokemon?offset=${(currentPage - 1) * 20}&limit=20`,
-    );
-  }, [currentPage]);
-
-  const fetchPokemons = (url) => {
-    axios
-      .get(url)
-      .then((response) => {
-        // setPokemons(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 20));
-        return response.data.results.map((pokemon) => {
-          return axios.get(pokemon.url).then((urlResponse) => {
-            const urlResponseData = urlResponse.data;
-            return axios
-              .get(constants.URLS.IMG_URL + `${urlResponseData.id}.png`)
-              .then((imageResponse) => {
-                return {
-                  ...urlResponseData,
-                  image: imageResponse.config.url,
-                };
-              });
-          });
+    //Function: Fetch All Pokemon Names
+    const fetchAllPokemons = async (url) => {
+      try {
+        const response = await axios.get(url);
+        // console.log('All Pokemon Names Response:', response.data.results);
+        const getAllPokemonNames = response.data.results.map((pokemon) => {
+          return pokemon.name;
         });
-      })
-      .then((pokemonPromises) => {
-        return Promise.all(pokemonPromises);
-      })
-      .then((pokemonResponse) => {
-        setPokemonDetails(pokemonResponse);
-      })
-      .catch((error) => {
+        console.log('Pokemon:', getAllPokemonNames);
+        setAllPokemonNames(getAllPokemonNames);
+      } catch (error) {
         console.log(error);
-      });
-  };
+      }
+    };
 
+    //Function: Fetch Pokemons in range of 20
+    const fetchPokemons = async (url) => {
+      try {
+        const response = await axios.get(url);
+        const totalPages = Math.ceil(response.data.count / 20);
+        setTotalPages(totalPages);
+
+        const pokemonPromises = response.data.results.map(async (pokemon) => {
+          const urlResponse = await axios.get(pokemon.url);
+          const urlResponseData = urlResponse.data;
+
+          const imageResponse = await axios.get(
+            constants.URLS.IMG_URL + `${urlResponseData.id}.png`,
+          );
+
+          return {
+            ...urlResponseData,
+            image: imageResponse.config.url,
+          };
+        });
+
+        const pokemonResponse = await Promise.all(pokemonPromises);
+        setPokemonDetails(pokemonResponse);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (searchPokemon === '') {
+      fetchPokemons(
+        constants.URLS.BASE_URL +
+          `pokemon?offset=${(currentPage - 1) * 20}&limit=20`,
+      );
+    } else {
+      setPokemonDetails([]);
+      const filteredPokemonNames = allPokemonNames
+        .filter((pokemon) => pokemon.includes(searchPokemon))
+        .sort((a, b) => a.length - b.length);
+      console.log('Filtered Pokemons:', filteredPokemonNames);
+      const getFilteredPokemonData = filteredPokemonNames.map(
+        async (pokemon) => {
+          const pokemonResponse = await axios.get(
+            constants.URLS.BASE_URL + `pokemon/${pokemon}`,
+          );
+          const getFilteredPokemonImage = await axios.get(
+            constants.URLS.IMG_URL + `${pokemonResponse.data.id}.png`,
+          );
+          console.log('Filtered Pokemon Image:', getFilteredPokemonImage);
+          return pokemonResponse;
+        },
+      );
+
+      Promise.all(getFilteredPokemonData)
+        .then((responses) => {
+          console.log('Filtered Pokemon Data:', responses);
+        })
+        .catch((error) => {
+          console.error('Error fetching filtered Pokemon data:', error);
+        });
+    }
+
+    fetchAllPokemons(constants.URLS.BASE_URL + 'pokemon?limit=1302');
+  }, [currentPage, searchPokemon]);
+
+  //Pokemon Details
   const details = pokemonDetails.map((pokemonDetail, index) => {
     return (
       <div key={index} className="w-1/2 p-2">
@@ -65,12 +112,19 @@ const Displaypokemons = () => {
     setCurrentPage(newPageNumber);
   };
 
+  const handleSearch = (searchPokemon) => {
+    setSearchPokemon(searchPokemon);
+  };
+
   return (
-    <div className="parent-displaypokemons container p-4">
-      <div className="pokemon-details flex flex-wrap p-2">{details}</div>
-      <div className="pagination fixed bottom-0 left-0 right-0 border bg-gray-600">
+    <div className="parent-displaypokemons container flex flex-col p-4 pt-0">
+      <Searchpokemon onSearch={handleSearch}></Searchpokemon>
+      <div className="pokemon-details flex flex-grow flex-wrap p-2">
+        {details}
+      </div>
+      <div className="pagination bottom-0 left-0 right-0 mx-auto flex h-auto w-full rounded-xl border bg-gray-600">
         <ReactPaginate
-          className="pagination m-auto flex justify-center space-x-16 p-3 font-bold"
+          className="pagination m-auto flex justify-center space-x-16 py-4 font-bold"
           pageCount={totalPages}
           onPageChange={handlePageChange}
           previousLabel={'Previous'}
@@ -99,5 +153,3 @@ const Displaypokemons = () => {
     </div>
   );
 };
-
-export default Displaypokemons;

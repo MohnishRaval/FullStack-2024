@@ -10,6 +10,7 @@
     "dev": "lerna run dev --concurrency=5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.0",
     "lerna": "^8.1.2",
     "postcss-nesting": "^12.1.0",
     "typescript": "^5.4.2"
