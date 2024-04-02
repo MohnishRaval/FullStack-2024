@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 export const Pokemon = ({ name, index, image }) => {
   return (
-    <div className="border-2 border-black p-1">
+    <div className="rounded-lg border-2 border-black p-1">
       {index}. {name}
       {image ? (
         <img src={image} alt={name} className="h-20 w-20" />
