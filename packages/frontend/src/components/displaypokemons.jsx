@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { Pokemon } from './pokemon';
 import ReactPaginate from 'react-paginate';
 import { Searchpokemon } from './searchpokemon';
+import { throttle } from 'lodash';
+
+const cache = {};
 
 export const Displaypokemons = () => {
   const [allPokemonNames, setAllPokemonNames] = useState([]);
@@ -13,24 +16,33 @@ export const Displaypokemons = () => {
   const [searchPokemon, setSearchPokemon] = useState('');
 
   useEffect(() => {
-    //Function: Fetch All Pokemon Names
+    console.log('cache=', cache);
+
+    // Function: Fetch All Pokemon Names
     const fetchAllPokemons = async (url) => {
       try {
+        if (cache[url]) {
+          setAllPokemonNames(cache[url]);
+          return;
+        }
         const response = await axios.get(url);
-        // console.log('All Pokemon Names Response:', response.data.results);
-        const getAllPokemonNames = response.data.results.map((pokemon) => {
-          return pokemon.name;
-        });
-        console.log('Pokemon:', getAllPokemonNames);
+        const getAllPokemonNames = response.data.results.map(
+          (pokemon) => pokemon.name,
+        );
         setAllPokemonNames(getAllPokemonNames);
+        cache[url] = getAllPokemonNames;
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching all Pokemon names:', error);
       }
     };
 
-    //Function: Fetch Pokemons in range of 20
+    // Function: Fetch Pokemons in range of 20
     const fetchPokemons = async (url) => {
       try {
+        if (cache[url]) {
+          setPokemonDetails(cache[url]);
+          return;
+        }
         const response = await axios.get(url);
         const totalPages = Math.ceil(response.data.count / 20);
         setTotalPages(totalPages);
@@ -51,10 +63,45 @@ export const Displaypokemons = () => {
 
         const pokemonResponse = await Promise.all(pokemonPromises);
         setPokemonDetails(pokemonResponse);
+        cache[url] = pokemonResponse;
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching Pokemon details:', error);
       }
     };
+
+    // Function: Fetch Pokemon by Name
+    const fetchPokemonByName = throttle(async (filteredPokemonNames) => {
+      try {
+        const promises = filteredPokemonNames.map(async (pokemon) => {
+          try {
+            const pokemonResponse = await axios.get(
+              constants.URLS.BASE_URL + `pokemon/${pokemon}`,
+            );
+            const getFilteredPokemonImage = await axios.get(
+              constants.URLS.IMG_URL + `${pokemonResponse.data.id}.png`,
+            );
+
+            const pokemonDetails = {
+              name: pokemonResponse.data.name,
+              image: getFilteredPokemonImage.config.url,
+            };
+
+            return pokemonDetails;
+          } catch (imageError) {
+            console.error(`Error fetching image for ${pokemon}:`, imageError);
+            return {
+              name: pokemon,
+              image: null, // or provide a default image URL
+            };
+          }
+        });
+
+        const filteredPokemonDetails = await Promise.all(promises);
+        setPokemonDetails(filteredPokemonDetails);
+      } catch (error) {
+        console.error('Error fetching filtered Pokemon data:', error);
+      }
+    }, 5000);
 
     if (searchPokemon === '') {
       fetchPokemons(
@@ -66,59 +113,33 @@ export const Displaypokemons = () => {
       const filteredPokemonNames = allPokemonNames
         .filter((pokemon) => pokemon.includes(searchPokemon))
         .sort((a, b) => a.length - b.length);
-      console.log('Filtered Pokemons:', filteredPokemonNames);
-      const getFilteredPokemonData = filteredPokemonNames.map(
-        async (pokemon) => {
-          const pokemonResponse = await axios.get(
-            constants.URLS.BASE_URL + `pokemon/${pokemon}`,
-          );
-          const getFilteredPokemonImage = await axios.get(
-            constants.URLS.IMG_URL + `${pokemonResponse.data.id}.png`,
-          );
-          console.log('Filtered Pokemon Image:', getFilteredPokemonImage);
-          return pokemonResponse;
-        },
-      );
-
-      Promise.all(getFilteredPokemonData)
-        .then((responses) => {
-          console.log('Filtered Pokemon Data:', responses);
-        })
-        .catch((error) => {
-          console.error('Error fetching filtered Pokemon data:', error);
-        });
+      fetchPokemonByName(filteredPokemonNames);
     }
 
     fetchAllPokemons(constants.URLS.BASE_URL + 'pokemon?limit=1302');
   }, [currentPage, searchPokemon]);
 
-  //Pokemon Details
-  const details = pokemonDetails.map((pokemonDetail, index) => {
-    return (
-      <div key={index} className="w-1/2 p-2">
-        <Pokemon
-          key={index}
-          index={index + 1 + (currentPage - 1) * 20}
-          name={pokemonDetail.name}
-          image={pokemonDetail?.image}
-        ></Pokemon>
-      </div>
-    );
-  });
+  // Pokemon Details
+  const details = pokemonDetails.map((pokemonDetail, index) => (
+    <div key={index} className="w-1/2 p-2">
+      <Pokemon
+        key={index}
+        index={index + 1 + (currentPage - 1) * 20}
+        name={pokemonDetail.name}
+        image={pokemonDetail?.image}
+      />
+    </div>
+  ));
 
-  //Page Change Functions
-  const handlePageChange = (selectedPage) => {
-    const newPageNumber = selectedPage.selected + 1;
-    setCurrentPage(newPageNumber);
-  };
+  // Page Change Functions
+  const handlePageChange = (selectedPage) =>
+    setCurrentPage(selectedPage.selected + 1);
 
-  const handleSearch = (searchPokemon) => {
-    setSearchPokemon(searchPokemon);
-  };
+  const handleSearch = (searchPokemon) => setSearchPokemon(searchPokemon);
 
   return (
     <div className="parent-displaypokemons container flex flex-col p-4 pt-0">
-      <Searchpokemon onSearch={handleSearch}></Searchpokemon>
+      <Searchpokemon onSearch={handleSearch} />
       <div className="pokemon-details flex flex-grow flex-wrap p-2">
         {details}
       </div>
@@ -148,7 +169,7 @@ export const Displaypokemons = () => {
           nextLinkClassName={
             'next text-base text-gray-900 dark:text-black w-8 h-8 mr-1 flex justify-center items-center w-full p-1'
           }
-        ></ReactPaginate>
+        />
       </div>
     </div>
   );
