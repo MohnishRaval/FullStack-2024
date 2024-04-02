@@ -6,7 +6,7 @@ export const Searchpokemon = ({ onSearch }) => {
   const [inputSearchPokemon, setInputSearchPokemon] = useState('');
   const debouncedSearch = debounce((value) => {
     onSearch(value);
-  }, 1000);
+  }, 2000);
 
   const handleSearchPokemon = (e) => {
     e.preventDefault();

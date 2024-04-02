@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
+import pokemonIcon from '../assets/pokemon-icon.png';
 
 export const Pokemon = ({ name, index, image }) => {
   return (
     <div className="rounded-lg border-2 border-black p-1">
       {index}. {name}
-      {image ? (
+      {image !== null ? (
         <img src={image} alt={name} className="h-20 w-20" />
       ) : (
-        <div>Loading...</div>
+        <img src={pokemonIcon} alt="Pokemon Icon" className="h-20 w-20" />
       )}
     </div>
   );
