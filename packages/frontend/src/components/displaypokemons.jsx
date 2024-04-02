@@ -73,10 +73,9 @@ export const Displaypokemons = () => {
         console.error('Error fetching Pokemon details:', error);
       }
     };
-
+    setLoading(true);
     // Function: Fetch Pokemon by Name
     const fetchPokemonByName = throttle(async (filteredPokemonNames) => {
-      setLoading(true);
       try {
         const promises = filteredPokemonNames.map(async (pokemon) => {
           try {
