@@ -17,6 +17,10 @@ export const Displaypokemons = () => {
   const [searchPokemon, setSearchPokemon] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const setLoadingState = (isLoading) => {
+    setLoading(isLoading);
+  };
+
   useEffect(() => {
     console.log('cache=', cache);
 
@@ -107,7 +111,7 @@ export const Displaypokemons = () => {
       } catch (error) {
         console.error('Error fetching filtered Pokemon data:', error);
       }
-    }, 5000);
+    }, 2000);
 
     if (searchPokemon === '') {
       fetchPokemons(
@@ -145,7 +149,7 @@ export const Displaypokemons = () => {
 
   return (
     <div className="parent-displaypokemons container flex min-h-screen flex-col p-4 pt-0">
-      <Searchpokemon onSearch={handleSearch} />
+      <Searchpokemon onSearch={handleSearch} setLoading={setLoadingState} />
       <div className="pokemon-details flex flex-grow flex-wrap p-2">
         {loading ? (
           <div className="flex h-full min-h-screen w-full items-center justify-center backdrop-blur">

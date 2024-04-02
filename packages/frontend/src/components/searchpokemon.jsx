@@ -2,11 +2,12 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { debounce } from 'lodash';
 
-export const Searchpokemon = ({ onSearch }) => {
+export const Searchpokemon = ({ onSearch, setLoading }) => {
   const [inputSearchPokemon, setInputSearchPokemon] = useState('');
   const debouncedSearch = debounce((value) => {
     onSearch(value);
-  }, 2000);
+    setLoading(true);
+  }, 500);
 
   const handleSearchPokemon = (e) => {
     e.preventDefault();
@@ -35,4 +36,5 @@ export const Searchpokemon = ({ onSearch }) => {
 
 Searchpokemon.propTypes = {
   onSearch: PropTypes.func,
+  setLoading: PropTypes.func,
 };
