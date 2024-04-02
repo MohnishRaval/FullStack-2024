@@ -17,11 +17,9 @@ export const Displaypokemons = () => {
     const fetchAllPokemons = async (url) => {
       try {
         const response = await axios.get(url);
-        // console.log('All Pokemon Names Response:', response.data.results);
         const getAllPokemonNames = response.data.results.map((pokemon) => {
           return pokemon.name;
         });
-        console.log('Pokemon:', getAllPokemonNames);
         setAllPokemonNames(getAllPokemonNames);
       } catch (error) {
         console.log(error);
@@ -50,9 +48,52 @@ export const Displaypokemons = () => {
         });
 
         const pokemonResponse = await Promise.all(pokemonPromises);
+        console.log(
+          'Pokemon Response from fetchPokemon Function:',
+          pokemonResponse,
+        );
         setPokemonDetails(pokemonResponse);
       } catch (error) {
         console.log(error);
+      }
+    };
+
+    //Function: Fetch Pokemon by Name
+    const fetchPokemonByName = async (filteredPokemonNames) => {
+      try {
+        const promises = filteredPokemonNames.map(async (pokemon) => {
+          const pokemonResponse = await axios.get(
+            constants.URLS.BASE_URL + `pokemon/${pokemon}`,
+          );
+          const getFilteredPokemonImage = await axios.get(
+            constants.URLS.IMG_URL + `${pokemonResponse.data.id}.png`,
+          );
+
+          pokemonResponse.data.image = getFilteredPokemonImage.config.url;
+
+          console.log('Filtered Pokemon Response:', pokemonResponse);
+
+          return pokemonResponse;
+        });
+
+        const filteredPokemonResponses = await Promise.all(promises);
+
+        const filteredPokemonDetails = filteredPokemonResponses.map(
+          (pokemon) => {
+            return {
+              name: pokemon.data.name,
+              image: pokemon.data.image,
+            };
+          },
+        );
+        console.log(
+          'Pokemon Response from fetchPokemonByName Function:',
+          filteredPokemonDetails,
+        );
+        setPokemonDetails(filteredPokemonDetails);
+      } catch (error) {
+        console.error('Error fetching filtered Pokemon data:', error);
+        throw error;
       }
     };
 
@@ -67,26 +108,8 @@ export const Displaypokemons = () => {
         .filter((pokemon) => pokemon.includes(searchPokemon))
         .sort((a, b) => a.length - b.length);
       console.log('Filtered Pokemons:', filteredPokemonNames);
-      const getFilteredPokemonData = filteredPokemonNames.map(
-        async (pokemon) => {
-          const pokemonResponse = await axios.get(
-            constants.URLS.BASE_URL + `pokemon/${pokemon}`,
-          );
-          const getFilteredPokemonImage = await axios.get(
-            constants.URLS.IMG_URL + `${pokemonResponse.data.id}.png`,
-          );
-          console.log('Filtered Pokemon Image:', getFilteredPokemonImage);
-          return pokemonResponse;
-        },
-      );
-
-      Promise.all(getFilteredPokemonData)
-        .then((responses) => {
-          console.log('Filtered Pokemon Data:', responses);
-        })
-        .catch((error) => {
-          console.error('Error fetching filtered Pokemon data:', error);
-        });
+      fetchPokemonByName(filteredPokemonNames);
+      // console.log('Filtered Pokemon Final', pokemonDetails);
     }
 
     fetchAllPokemons(constants.URLS.BASE_URL + 'pokemon?limit=1302');
