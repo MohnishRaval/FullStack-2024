@@ -6,7 +6,7 @@ import ReactPaginate from 'react-paginate';
 import { Searchpokemon } from './searchpokemon';
 import { throttle } from 'lodash';
 import { Oval } from 'react-loader-spinner';
-import { useData } from '../context/DataContext';
+import { useData } from '../context/DataContext.jsx';
 
 const cache = {};
 
@@ -17,6 +17,7 @@ export const Displaypokemons = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchPokemon, setSearchPokemon] = useState('');
   const [loading, setLoading] = useState(true);
+  const { pokemonModalData, setPokemonModalData } = useData();
 
   const setLoadingState = (isLoading) => {
     setLoading(isLoading);
@@ -73,6 +74,8 @@ export const Displaypokemons = () => {
         const pokemonResponse = await Promise.all(pokemonPromises);
         setPokemonDetails(pokemonResponse);
         cache[url] = pokemonResponse;
+        setPokemonModalData(pokemonResponse);
+        console.log('Pokemon Modal Data:', pokemonModalData);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching Pokemon details:', error);
