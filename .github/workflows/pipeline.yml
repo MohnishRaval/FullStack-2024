@@ -56,23 +56,22 @@ jobs:
           docker push 19982707/fullstack-2024:frontend-${{ github.sha }}
           docker push 19982707/fullstack-2024:backend-${{ github.sha }}
 
-      - name: SSH into EC2 and pull latest Docker images
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            # Cleanup - Remove existing containers and images
-            docker ps -aq --filter "name=frontend-container" | xargs docker rm -f 2>/dev/null
-            docker ps -aq --filter "name=backend-container" | xargs docker rm -f 2>/dev/null
-            docker images -q 19982707/fullstack-2024:frontend-${{ github.sha }} | xargs docker rmi -f 2>/dev/null
-            docker images -q 19982707/fullstack-2024:backend-${{ github.sha }} | xargs docker rmi -f 2>/dev/null
+          name: SSH into EC2 and pull latest Docker images
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.EC2_HOST }}
+            username: ${{ secrets.EC2_USERNAME }}
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              # Cleanup - Remove existing containers and images
+              docker ps -aq --filter "name=frontend-container" --filter "label=com.example.project=fullstack-2024" | xargs docker rm -f 2>/dev/null
+              docker ps -aq --filter "name=backend-container" --filter "label=com.example.project=fullstack-2024" | xargs docker rm -f 2>/dev/null
+              docker images -q --filter "label=com.example.project=fullstack-2024" | xargs docker rmi -f 2>/dev/null
 
-            # Pull the latest Docker images
-            docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
-            docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
+              # Pull the latest Docker images
+              docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
+              docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
 
-            # Run the new containers
-            docker run -d --name frontend-container -p 3000:3000 19982707/fullstack-2024:frontend-${{ github.sha }}
-            docker run -d --name backend-container -p 4000:4000 19982707/fullstack-2024:backend-${{ github.sha }}
+              # Run the new containers with labels
+              docker run -d --name frontend-container --label com.example.project=fullstack-2024 -p 3000:3000 19982707/fullstack-2024:frontend-${{ github.sha }}
+              docker run -d --name backend-container --label com.example.project=fullstack-2024 -p 4000:4000 19982707/fullstack-2024:backend-${{ github.sha }}
