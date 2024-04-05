@@ -8,6 +8,7 @@ import { throttle } from 'lodash';
 import { Oval } from 'react-loader-spinner';
 import { useData } from '../context/DataContext.jsx';
 
+//cache to store the API data
 const cache = {};
 
 export const Displaypokemons = () => {
