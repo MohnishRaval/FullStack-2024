@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import pokemonIcon from '../assets/pokemon-icon.png';
+import { DetailModal } from './detailModal';
 
 export const Pokemon = ({ name, index, image }) => {
   return (
@@ -10,6 +11,7 @@ export const Pokemon = ({ name, index, image }) => {
       ) : (
         <img src={pokemonIcon} alt="Pokemon Icon" className="h-20 w-20" />
       )}
+      <DetailModal pokemonName={name} />
     </div>
   );
 };

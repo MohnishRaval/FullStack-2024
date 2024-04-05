@@ -6,6 +6,7 @@ import ReactPaginate from 'react-paginate';
 import { Searchpokemon } from './searchpokemon';
 import { throttle } from 'lodash';
 import { Oval } from 'react-loader-spinner';
+import { useData } from '../context/DataContext.jsx';
 
 const cache = {};
 
@@ -16,6 +17,11 @@ export const Displaypokemons = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchPokemon, setSearchPokemon] = useState('');
   const [loading, setLoading] = useState(true);
+  const { pokemonModalData, setPokemonModalData } = useData();
+
+  const setLoadingState = (isLoading) => {
+    setLoading(isLoading);
+  };
 
   useEffect(() => {
     console.log('cache=', cache);
@@ -68,15 +74,16 @@ export const Displaypokemons = () => {
         const pokemonResponse = await Promise.all(pokemonPromises);
         setPokemonDetails(pokemonResponse);
         cache[url] = pokemonResponse;
+        setPokemonModalData(pokemonResponse);
+        console.log('Pokemon Modal Data:', pokemonModalData);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching Pokemon details:', error);
       }
     };
-
+    setLoading(true);
     // Function: Fetch Pokemon by Name
     const fetchPokemonByName = throttle(async (filteredPokemonNames) => {
-      setLoading(true);
       try {
         const promises = filteredPokemonNames.map(async (pokemon) => {
           try {
@@ -108,7 +115,7 @@ export const Displaypokemons = () => {
       } catch (error) {
         console.error('Error fetching filtered Pokemon data:', error);
       }
-    }, 5000);
+    }, 2000);
 
     if (searchPokemon === '') {
       fetchPokemons(
@@ -146,10 +153,10 @@ export const Displaypokemons = () => {
 
   return (
     <div className="parent-displaypokemons container flex min-h-screen flex-col p-4 pt-0">
-      <Searchpokemon onSearch={handleSearch} />
+      <Searchpokemon onSearch={handleSearch} setLoading={setLoadingState} />
       <div className="pokemon-details flex flex-grow flex-wrap p-2">
         {loading ? (
-          <div className="flex h-full min-h-screen w-full items-center justify-center backdrop-blur">
+          <div className="flex h-full min-h-screen w-full items-center justify-center rounded-xl bg-black opacity-30 backdrop-blur">
             <Oval
               visible={true}
               height="80"
