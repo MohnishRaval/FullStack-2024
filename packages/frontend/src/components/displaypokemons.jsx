@@ -1,9 +1,9 @@
-import { constants } from '../constants/constants';
+import { constants } from '../constants/constants.js';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Pokemon } from './pokemon';
+import { Pokemon } from './pokemon.jsx';
 import ReactPaginate from 'react-paginate';
-import { Searchpokemon } from './searchpokemon';
+import { Searchpokemon } from './searchpokemon.jsx';
 import { throttle } from 'lodash';
 import { Oval } from 'react-loader-spinner';
 import { useData } from '../context/DataContext.jsx';
