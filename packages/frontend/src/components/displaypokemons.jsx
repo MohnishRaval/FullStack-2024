@@ -6,6 +6,7 @@ import ReactPaginate from 'react-paginate';
 import { Searchpokemon } from './searchpokemon';
 import { throttle } from 'lodash';
 import { Oval } from 'react-loader-spinner';
+import { useData } from '../context/DataContext';
 
 const cache = {};
 
@@ -152,7 +153,7 @@ export const Displaypokemons = () => {
       <Searchpokemon onSearch={handleSearch} setLoading={setLoadingState} />
       <div className="pokemon-details flex flex-grow flex-wrap p-2">
         {loading ? (
-          <div className="flex h-full min-h-screen w-full items-center justify-center backdrop-blur">
+          <div className="flex h-full min-h-screen w-full items-center justify-center rounded-xl bg-black opacity-30 backdrop-blur">
             <Oval
               visible={true}
               height="80"
