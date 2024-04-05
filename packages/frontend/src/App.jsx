@@ -1,4 +1,4 @@
-import { Displaypokemons } from './components/displayPokemons.jsx';
+import { Displaypokemons } from './components/displaypokemons.jsx';
 // import { Navbar } from './components/navbar.jsx';
 
 const App = () => {
