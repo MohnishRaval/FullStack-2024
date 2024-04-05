@@ -72,9 +72,18 @@ jobs:
             docker rmi -f 19982707/fullstack-2024:backend-${{ github.sha }} || true
 
             # Pull the latest Docker images
-            docker pull 19982707/fullstack-2024:frontend-${{ github.sha }}
-            docker pull 19982707/fullstack-2024:backend-${{ github.sha }}
+            docker pull 19982707/fullstack-2024:frontend-${{ github.sha }} || true
+            docker pull 19982707/fullstack-2024:backend-${{ github.sha }} || true
 
             # Run the new containers
             docker run -d --name frontend-container -p 3000:3000 19982707/fullstack-2024:frontend-${{ github.sha }}
             docker run -d --name backend-container -p 4000:4000 19982707/fullstack-2024:backend-${{ github.sha }}
+
+            # Handling errors and cleanup
+            if [ $? -ne 0 ]; then
+              echo "Error occurred during Docker commands execution."
+              docker ps -a | grep 'frontend-container' && docker rm -f frontend-container
+              docker ps -a | grep 'backend-container' && docker rm -f backend-container
+              docker images -a | grep '19982707/fullstack-2024' && docker rmi -f $(docker images -a | grep '19982707/fullstack-2024' | awk '{print $3}')
+              exit 1
+            fi
